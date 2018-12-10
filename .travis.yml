@@ -1,0 +1,13 @@
+---
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: 'Build systemd-libvirt'
+      script:
+        - cd el7
+        - make systemd-libvirt
+        - docker tag local/systemd-libvirt nonameyet/systemd-libvirt
+        - echo "$DOCKERHUB_PW" | docker login --username "$DOCKERHUB_UNAME" --password-stdin
+        - docker push nonameyet/systemd-libvirt
