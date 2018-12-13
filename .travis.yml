@@ -5,9 +5,13 @@ services:
 jobs:
   include:
     - stage: 'Build systemd-libvirt'
+      if: type = pull_request
       script:
         - cd el7
-        - make systemd-libvirt
-        - docker tag local/systemd-libvirt nonameyet/systemd-libvirt
-        - echo "$DOCKERHUB_PW" | docker login --username "$DOCKERHUB_UNAME" --password-stdin
-        - docker push nonameyet/systemd-libvirt
+        - docker build jenkins-agent-lago-mock
+    - stage: 'Deploy systemd-libvirt'
+      if: type = push
+      script: >
+        make DOCKERHUB_PW=${DOCKERHUB_PW}
+        DOCKERHUB_UNAME=${DOCKERHUB_UNAME}
+        jenkins-agent-lago-mock
